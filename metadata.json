@@ -1,0 +1,6 @@
+{
+  "name": "Orakzai Real Estate",
+  "description": "Luxury property advisory and real estate portfolio in Peshawar, Nowshera, and WAPDA Town, Pakistan. Properties starting from PKR 36 Lac.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

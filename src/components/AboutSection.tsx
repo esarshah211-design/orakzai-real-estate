@@ -18,6 +18,13 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onContactClick }) =>
                 alt="Orakzai Real Estate Private Client Advisory"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (!img.dataset.fallbackTried) {
+                    img.dataset.fallbackTried = 'true';
+                    img.src = '/images/about_architectural_lounge_1793257686256.jpg';
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c0e] via-transparent to-transparent opacity-60" />
 

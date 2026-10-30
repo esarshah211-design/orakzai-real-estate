@@ -66,6 +66,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn, on
               Properties
             </button>
             <button
+              onClick={() => handleLinkClick('gallery')}
+              className="hover:text-[#c5a880] transition-colors whitespace-nowrap cursor-pointer"
+            >
+              Gallery
+            </button>
+            <button
               onClick={() => handleLinkClick('about')}
               className="hover:text-[#c5a880] transition-colors whitespace-nowrap cursor-pointer"
             >
@@ -159,6 +165,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn, on
               className="text-left py-2 hover:text-[#c5a880] transition-colors"
             >
               Properties & Plots
+            </button>
+            <button
+              onClick={() => handleLinkClick('gallery')}
+              className="text-left py-2 hover:text-[#c5a880] transition-colors"
+            >
+              Photo Gallery
             </button>
             <button
               onClick={() => handleLinkClick('about')}

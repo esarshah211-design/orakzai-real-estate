@@ -61,6 +61,14 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, onNavigate }) => {
               </li>
               <li>
                 <button
+                  onClick={() => onNavigate('gallery')}
+                  className="hover:text-[#c5a880] transition-colors cursor-pointer"
+                >
+                  Property Photo Gallery
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => onNavigate('about')}
                   className="hover:text-[#c5a880] transition-colors cursor-pointer"
                 >

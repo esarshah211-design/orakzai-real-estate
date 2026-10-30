@@ -121,6 +121,16 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
                   alt={property.title}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (!img.dataset.fallbackTried) {
+                      img.dataset.fallbackTried = 'true';
+                      const filename = img.src.split('/').pop();
+                      if (filename) {
+                        img.src = `/images/${filename}`;
+                      }
+                    }
+                  }}
                 />
                 <div className="absolute bottom-3 left-3 bg-[#0b0c0e]/90 px-3 py-1.5 rounded-lg border border-[#c5a880]/40 backdrop-blur-md">
                   <span className="text-xs uppercase text-neutral-400 mr-2">Listing Price:</span>

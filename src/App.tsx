@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PropertiesSection } from './components/PropertiesSection';
+import { GallerySection } from './components/GallerySection';
 import { PropertyModal } from './components/PropertyModal';
 import { AboutSection } from './components/AboutSection';
 import { WhyChooseUs } from './components/WhyChooseUs';
@@ -16,12 +17,13 @@ import { LocationSection } from './components/LocationSection';
 import { AdminModal } from './components/AdminModal';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { Footer } from './components/Footer';
-import { INITIAL_PROPERTIES } from './data/initialProperties';
-import { Property, CustomerInquiry, PropertyCity, PropertyType } from './types';
+import { INITIAL_PROPERTIES, INITIAL_GALLERY_ITEMS } from './data/initialProperties';
+import { Property, CustomerInquiry, PropertyCity, PropertyType, GalleryItem } from './types';
 
 export default function App() {
   const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
   const [inquiries, setInquiries] = useState<CustomerInquiry[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(INITIAL_GALLERY_ITEMS);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
   // Quick filters passed from Hero
@@ -37,6 +39,7 @@ export default function App() {
   useEffect(() => {
     fetchProperties();
     fetchInquiries();
+    fetchGallery();
   }, []);
 
   const fetchProperties = async () => {
@@ -65,6 +68,65 @@ export default function App() {
     } catch {
       // Inquiries loaded from state
     }
+  };
+
+  const fetchGallery = async () => {
+    try {
+      const res = await fetch('/api/gallery');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setGalleryItems(json.data);
+        }
+      }
+    } catch {
+      // Offline fallback: keep INITIAL_GALLERY_ITEMS
+    }
+  };
+
+  const handleAddGalleryPhoto = async (item: {
+    title: string;
+    location: string;
+    category: any;
+    imageUrl: string;
+  }): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item)
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          setGalleryItems((prev) => [json.data, ...prev]);
+          return true;
+        }
+      }
+    } catch {
+      // fallback
+    }
+    const localItem: GalleryItem = {
+      id: `gal-local-${Date.now()}`,
+      title: item.title,
+      location: item.location,
+      category: item.category,
+      imageUrl: item.imageUrl,
+      isDemo: false,
+      uploadedAt: new Date().toISOString()
+    };
+    setGalleryItems((prev) => [localItem, ...prev]);
+    return true;
+  };
+
+  const handleDeleteGalleryPhoto = async (id: string): Promise<boolean> => {
+    try {
+      await fetch(`/api/gallery/${id}`, { method: 'DELETE' });
+    } catch {
+      // fallback
+    }
+    setGalleryItems((prev) => prev.filter((i) => i.id !== id));
+    return true;
   };
 
   const handleNavigate = (sectionId: string) => {
@@ -238,7 +300,14 @@ export default function App() {
         maxPriceFilter={heroMaxPriceFilter}
       />
 
-      {/* 4. About Orakzai Real Estate */}
+      {/* 4. Property Photo Gallery (Showcase of Images + Easy Real Photo Upload) */}
+      <GallerySection
+        galleryItems={galleryItems}
+        onAddPhoto={handleAddGalleryPhoto}
+        onDeletePhoto={handleDeleteGalleryPhoto}
+      />
+
+      {/* 5. About Orakzai Real Estate */}
       <AboutSection onContactClick={() => handleNavigate('contact')} />
 
       {/* 5. Why Choose Us */}

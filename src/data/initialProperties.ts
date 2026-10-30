@@ -182,3 +182,52 @@ export const BUSINESS_INFO = {
     }
   ]
 };
+
+export const INITIAL_GALLERY_ITEMS = [
+  {
+    id: 'gal-01',
+    title: 'Modern Contemporary Luxury Residence at Dusk',
+    location: 'WAPDA Town / Nowshera Corridor',
+    category: 'Houses & Villas' as const,
+    imageUrl: '/src/assets/images/hero_luxury_villa_1793257684730.jpg',
+    isDemo: true,
+    uploadedAt: '2026-10-20T10:00:00.000Z'
+  },
+  {
+    id: 'gal-02',
+    title: '10 Marla Luxury Modern Designer Villa',
+    location: 'Executive Enclave, WAPDA Town, Peshawar',
+    category: 'Houses & Villas' as const,
+    imageUrl: '/src/assets/images/prop_luxury_villa_1793257684935.jpg',
+    isDemo: true,
+    uploadedAt: '2026-10-22T14:30:00.000Z'
+  },
+  {
+    id: 'gal-03',
+    title: 'Master-Planned Demarcated Residential Sector Plots',
+    location: 'Sector B, WAPDA Town, Peshawar',
+    category: 'Residential Plots' as const,
+    imageUrl: '/src/assets/images/prop_residential_plot_1793257685483.jpg',
+    isDemo: true,
+    uploadedAt: '2026-10-23T09:15:00.000Z'
+  },
+  {
+    id: 'gal-04',
+    title: 'Prime Boulevard Commercial Plaza & Retail Arcade',
+    location: 'Commercial Avenue, Peshawar',
+    category: 'Commercial & Investment' as const,
+    imageUrl: '/src/assets/images/prop_commercial_investment_1793257686707.jpg',
+    isDemo: true,
+    uploadedAt: '2026-10-24T11:45:00.000Z'
+  },
+  {
+    id: 'gal-05',
+    title: 'Private Client Consultation Lounge',
+    location: 'Orakzai Real Estate Advisory',
+    category: 'Advisory Lounge' as const,
+    imageUrl: '/src/assets/images/about_architectural_lounge_1793257686256.jpg',
+    isDemo: true,
+    uploadedAt: '2026-10-25T16:20:00.000Z'
+  }
+];
+

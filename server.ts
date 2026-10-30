@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { INITIAL_PROPERTIES } from './src/data/initialProperties.js';
+import { INITIAL_PROPERTIES, INITIAL_GALLERY_ITEMS } from './src/data/initialProperties.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,7 +11,15 @@ const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
-app.use(express.json());
+// Support JSON payloads including base64 photo uploads for the gallery
+app.use(express.json({ limit: '30mb' }));
+app.use(express.urlencoded({ limit: '30mb', extended: true }));
+
+// Guaranteed static image serving across dev and production
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/src/assets/images', express.static(path.join(__dirname, 'src/assets/images')));
+app.use('/src/assets/images', express.static(path.join(__dirname, 'public/images')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Ensure data folder exists
 const DATA_DIR = path.join(__dirname, 'data');
@@ -21,10 +29,16 @@ if (!fs.existsSync(DATA_DIR)) {
 
 const PROPERTIES_FILE = path.join(DATA_DIR, 'properties.json');
 const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
+const GALLERY_FILE = path.join(DATA_DIR, 'gallery.json');
 
 // Initialize properties if not present
 if (!fs.existsSync(PROPERTIES_FILE)) {
   fs.writeFileSync(PROPERTIES_FILE, JSON.stringify(INITIAL_PROPERTIES, null, 2), 'utf-8');
+}
+
+// Initialize gallery if not present
+if (!fs.existsSync(GALLERY_FILE)) {
+  fs.writeFileSync(GALLERY_FILE, JSON.stringify(INITIAL_GALLERY_ITEMS, null, 2), 'utf-8');
 }
 
 // Initialize inquiries if not present
@@ -82,6 +96,19 @@ function getStoredInquiries() {
 
 function saveInquiries(inquiries: any[]) {
   fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(inquiries, null, 2), 'utf-8');
+}
+
+function getStoredGallery() {
+  try {
+    const content = fs.readFileSync(GALLERY_FILE, 'utf-8');
+    return JSON.parse(content);
+  } catch (err) {
+    return INITIAL_GALLERY_ITEMS;
+  }
+}
+
+function saveGallery(items: any[]) {
+  fs.writeFileSync(GALLERY_FILE, JSON.stringify(items, null, 2), 'utf-8');
 }
 
 // ======================== API ROUTES ========================
@@ -199,7 +226,42 @@ app.post('/api/admin/login', (req: Request, res: Response) => {
   }
 });
 
-// 9. OVERVIEW STATS
+// 9. GALLERY ROUTES
+app.get('/api/gallery', (_req: Request, res: Response) => {
+  const gallery = getStoredGallery();
+  res.json({ success: true, data: gallery });
+});
+
+app.post('/api/gallery', (req: Request, res: Response) => {
+  const { title, location, category, imageUrl } = req.body;
+  if (!imageUrl) {
+    res.status(400).json({ success: false, message: 'Image data or URL is required.' });
+    return;
+  }
+  const gallery = getStoredGallery();
+  const newItem = {
+    id: `gal-${Date.now()}`,
+    title: title?.trim() || 'Verified Property Site Photo',
+    location: location?.trim() || 'Peshawar / WAPDA Town',
+    category: category || 'Site Photos',
+    imageUrl,
+    isDemo: false, // User uploaded real photos are NOT demo photos!
+    uploadedAt: new Date().toISOString()
+  };
+  gallery.unshift(newItem);
+  saveGallery(gallery);
+  res.status(201).json({ success: true, data: newItem });
+});
+
+app.delete('/api/gallery/:id', (req: Request, res: Response) => {
+  const { id } = req.params;
+  let gallery = getStoredGallery();
+  gallery = gallery.filter((item: any) => item.id !== id);
+  saveGallery(gallery);
+  res.json({ success: true, message: 'Photo removed from gallery.' });
+});
+
+// 10. OVERVIEW STATS
 app.get('/api/stats', (_req: Request, res: Response) => {
   const properties = getStoredProperties();
   const inquiries = getStoredInquiries();

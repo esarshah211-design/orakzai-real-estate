@@ -46,3 +46,14 @@ export interface AdminStats {
   pendingInquiries: number;
   startingPriceLac: number;
 }
+
+export interface GalleryItem {
+  id: string;
+  title: string;
+  location: string;
+  category: 'Residential Plots' | 'Houses & Villas' | 'Commercial & Investment' | 'Advisory Lounge' | 'Site Photos';
+  imageUrl: string;
+  isDemo: boolean;
+  uploadedAt: string;
+}
+

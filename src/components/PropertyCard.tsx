@@ -26,9 +26,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property, onViewDeta
           referrerPolicy="no-referrer"
           loading="lazy"
           onError={(e) => {
-            // High-fidelity architectural CSS fallback
-            const target = e.target as HTMLElement;
-            target.style.display = 'none';
+            const img = e.currentTarget;
+            if (!img.dataset.fallbackTried) {
+              img.dataset.fallbackTried = 'true';
+              const filename = img.src.split('/').pop();
+              if (filename) {
+                img.src = `/images/${filename}`;
+              }
+            }
           }}
         />
 

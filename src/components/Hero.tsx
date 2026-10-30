@@ -41,8 +41,11 @@ export const Hero: React.FC<HeroProps> = ({
           className="w-full h-full object-cover object-center scale-105 animate-fade-in transition-transform duration-1000 ease-out"
           referrerPolicy="no-referrer"
           onError={(e) => {
-            // Elegant CSS fallback if image asset is unavailable
-            (e.target as HTMLElement).style.display = 'none';
+            const img = e.currentTarget;
+            if (!img.dataset.fallbackTried) {
+              img.dataset.fallbackTried = 'true';
+              img.src = '/images/hero_luxury_villa_1793257684730.jpg';
+            }
           }}
         />
         {/* Measured Scrim: 4.5:1 WCAG contrast across all luminance levels */}
